@@ -27,7 +27,8 @@ export default function Home() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [streaming, setStreaming] = useState("");
   const [status, setStatus] = useState<Status>("idle");
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const recognitionRef = useRef<any>(null);
   const bootedRef = useRef(false);
 
   const sendMessage = useCallback(async (text: string, history?: ChatMessage[]) => {

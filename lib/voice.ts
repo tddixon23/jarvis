@@ -70,9 +70,10 @@ export function stopSpeaking(): void {
 export function startListening(
   onResult: (transcript: string) => void,
   onEnd: () => void
-): SpeechRecognition | null {
-  const SpeechRecognition =
-    window.SpeechRecognition || (window as any).webkitSpeechRecognition;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+): any {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
   if (!SpeechRecognition) return null;
 
   const recognition = new SpeechRecognition();
@@ -80,7 +81,8 @@ export function startListening(
   recognition.interimResults = false;
   recognition.maxAlternatives = 1;
 
-  recognition.onresult = (event: SpeechRecognitionEvent) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  recognition.onresult = (event: any) => {
     const transcript = event.results[0][0].transcript;
     onResult(transcript);
   };
