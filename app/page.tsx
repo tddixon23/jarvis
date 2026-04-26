@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import VoiceBox from "@/components/VoiceBox";
 import ChatDialog from "@/components/ChatDialog";
 import InputBar from "@/components/InputBar";
@@ -27,9 +27,24 @@ export default function Home() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [streaming, setStreaming] = useState("");
   const [status, setStatus] = useState<Status>("idle");
+  const [mouse, setMouse] = useState({ x: 0, y: 0 });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const recognitionRef = useRef<any>(null);
   const bootedRef = useRef(false);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLElement>) => {
+    const cx = window.innerWidth / 2;
+    const cy = window.innerHeight / 2;
+    setMouse({
+      x: ((e.clientX - cx) / cx) * 7,
+      y: ((e.clientY - cy) / cy) * 7,
+    });
+  }, []);
+
+  const orbStyle = useMemo(() => ({
+    transform: `translate(${mouse.x}px, ${mouse.y}px)`,
+    transition: "transform 0.25s ease-out",
+  }), [mouse]);
 
   const sendMessage = useCallback(async (text: string, history?: ChatMessage[]) => {
     if (status === "thinking" || status === "speaking") return;
@@ -122,7 +137,7 @@ export default function Home() {
   const busy = status === "thinking" || status === "speaking";
 
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100 flex flex-col overflow-hidden relative">
+    <main onMouseMove={handleMouseMove} className="min-h-screen bg-slate-950 text-slate-100 flex flex-col overflow-hidden relative">
       {/* Scanline overlay */}
       <div
         className="pointer-events-none absolute inset-0 z-10 opacity-[0.03]"
@@ -140,17 +155,31 @@ export default function Home() {
       />
 
       {/* Top bar */}
-      <header className="relative z-20 flex items-center justify-between px-6 py-3 border-b border-cyan-900/40">
+      <header className="relative z-20 flex items-center justify-between px-6 py-3 border-b border-cyan-900/40"
+        style={{ background: "linear-gradient(90deg, rgba(2,8,23,0.95) 0%, rgba(15,5,30,0.95) 50%, rgba(2,8,23,0.95) 100%)" }}>
         <div className="flex items-center gap-3">
-          <div className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_6px_rgba(0,212,255,0.8)] animate-pulse" />
-          <span className="font-mono text-sm tracking-[0.3em] text-cyan-400 uppercase">J.A.R.V.I.S.</span>
-          <span className="hidden sm:block text-[10px] font-mono tracking-widest text-cyan-800 uppercase ml-2">
+          <div className={`w-2 h-2 rounded-full animate-pulse shadow-[0_0_6px] transition-colors duration-500 ${
+            status === "listening" ? "bg-green-400 shadow-green-400/80"
+            : status === "thinking" ? "bg-purple-400 shadow-purple-400/80"
+            : status === "speaking" ? "bg-cyan-400 shadow-cyan-400/80"
+            : "bg-cyan-800 shadow-cyan-800/50"
+          }`} />
+          <span className="font-mono text-sm tracking-[0.3em] uppercase"
+            style={{ background: "linear-gradient(90deg, #00d4ff, #a855f7)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+            J.A.R.V.I.S.
+          </span>
+          <span className="hidden sm:block text-[10px] font-mono tracking-widest text-cyan-900 uppercase ml-2">
             Just A Rather Very Intelligent System
           </span>
         </div>
-        <div className="flex items-center gap-4 text-[10px] font-mono tracking-widest text-cyan-800 uppercase">
-          <span className={status !== "idle" ? "text-cyan-500" : ""}>{statusLabel}</span>
-          <span>
+        <div className="flex items-center gap-4 text-[10px] font-mono tracking-widest uppercase">
+          <span className={`transition-colors duration-300 ${
+            status === "listening" ? "text-green-400"
+            : status === "thinking" ? "text-purple-400"
+            : status === "speaking" ? "text-cyan-400"
+            : "text-cyan-900"
+          }`}>{statusLabel}</span>
+          <span className="text-cyan-900">
             {new Date().toLocaleDateString("en-GB", {
               weekday: "short", day: "2-digit", month: "short", year: "numeric",
             })}
@@ -162,8 +191,13 @@ export default function Home() {
       <div className="relative z-20 flex flex-1 gap-4 p-4 overflow-hidden" style={{ height: "calc(100vh - 53px)" }}>
         {/* Left panel */}
         <div className="flex flex-col gap-4 w-72 shrink-0 overflow-y-auto">
-          <HudBorder className="bg-slate-950/70 p-6 flex flex-col items-center gap-4">
-            <VoiceBox speaking={status === "speaking"} listening={status === "listening"} status={statusLabel} />
+          <HudBorder className="bg-slate-950/70 p-6 flex flex-col items-center gap-4" style={orbStyle}>
+            <VoiceBox
+              speaking={status === "speaking"}
+              listening={status === "listening"}
+              thinking={status === "thinking"}
+              status={statusLabel}
+            />
           </HudBorder>
 
           <HudBorder className="bg-slate-950/70 p-4">

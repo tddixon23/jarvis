@@ -53,7 +53,7 @@ export function speak(
   if (selectedVoice) utterance.voice = selectedVoice;
   utterance.lang = "en-GB";
   utterance.pitch = 0.88;  // Slightly lower — JARVIS baritone
-  utterance.rate = 0.92;   // Measured, deliberate pace
+  utterance.rate = 1.05;   // Natural conversational pace
   utterance.volume = 1;
 
   utterance.onstart = () => onStart?.();

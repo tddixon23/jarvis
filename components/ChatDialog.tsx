@@ -23,9 +23,11 @@ export default function ChatDialog({ messages, streaming }: Props) {
   return (
     <HudBorder className="flex flex-col h-full bg-slate-950/80 backdrop-blur">
       {/* Header */}
-      <div className="flex items-center gap-2 px-4 py-2 border-b border-cyan-900/50">
+      <div className="flex items-center gap-2 px-4 py-2 border-b border-cyan-900/50"
+        style={{ background: "linear-gradient(90deg, rgba(2,8,23,0.9), rgba(20,5,40,0.7), rgba(2,8,23,0.9))" }}>
         <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-        <span className="text-xs font-mono tracking-widest text-cyan-500 uppercase">
+        <span className="text-xs font-mono tracking-widest uppercase"
+          style={{ background: "linear-gradient(90deg, #22d3ee, #a855f7)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
           J.A.R.V.I.S. — Communication Log
         </span>
       </div>
@@ -46,8 +48,11 @@ export default function ChatDialog({ messages, streaming }: Props) {
               className={`max-w-[85%] px-3 py-2 text-sm leading-relaxed whitespace-pre-wrap rounded ${
                 msg.role === "user"
                   ? "bg-slate-800 text-slate-200 border border-slate-700"
-                  : "bg-cyan-950/60 text-cyan-100 border border-cyan-900/60 shadow-[0_0_8px_rgba(0,212,255,0.1)]"
+                  : "text-cyan-100 border border-cyan-900/50 shadow-[0_0_10px_rgba(0,212,255,0.08)]"
               }`}
+              style={msg.role === "assistant" ? {
+                background: "linear-gradient(135deg, rgba(8,24,50,0.85) 0%, rgba(20,8,40,0.7) 100%)",
+              } : undefined}
             >
               {msg.content}
             </div>
@@ -62,7 +67,8 @@ export default function ChatDialog({ messages, streaming }: Props) {
             </span>
             <div className="max-w-[85%] px-3 py-2 text-sm leading-relaxed whitespace-pre-wrap rounded bg-cyan-950/60 text-cyan-100 border border-cyan-900/60 shadow-[0_0_8px_rgba(0,212,255,0.15)]">
               {streaming}
-              <span className="inline-block w-1.5 h-3.5 bg-cyan-400 ml-0.5 animate-pulse align-middle" />
+              <span className="inline-block w-1.5 h-3.5 ml-0.5 animate-pulse align-middle rounded-sm"
+                style={{ background: "linear-gradient(180deg, #00d4ff, #a855f7)" }} />
             </div>
           </div>
         )}
